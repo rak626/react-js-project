@@ -1,10 +1,13 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 
 function App() {
   const [number, setNumber] = useState(false)
   const [symbol, setSymbol] = useState(false)
   const [passwordLength, setPasswordLength] = useState(8)
   const [password, setPassword] = useState('')
+
+  // use ref can remember ref of an element
+  const passwordInput = useRef(null)
 
   const generatePassword = useCallback(() => {
     const lowercaseCharacters = 'abcdefghijklmnopqrstuvwxyz'
@@ -29,6 +32,12 @@ function App() {
     setPassword(pass)
   }, [number, symbol, passwordLength, setPassword])
 
+  const copyPasswordHandler = useCallback(() => {
+    passwordInput.current?.select()
+    passwordInput.current?.setSelectionRange(0, 51)
+    window.navigator.clipboard.writeText(password)
+  }, [password])
+
   useEffect(() => {
     generatePassword()
   }, [number, symbol, passwordLength, generatePassword])
@@ -43,8 +52,12 @@ function App() {
             className='outline-none w-full py-1 px-3'
             placeholder='password'
             readOnly
+            ref={passwordInput}
           />
-          <button className='outline-none bg-blue-700 text-white px-3 py-0.5 shrink-0'>
+          <button
+            className='outline-none bg-blue-700 text-white px-3 py-0.5 shrink-0'
+            onClick={copyPasswordHandler}
+          >
             copy
           </button>
         </div>
